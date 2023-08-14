@@ -1,0 +1,47 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.6.33829.357
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MapperValidator", "MapperValidator\MapperValidator.csproj", "{629832D5-7406-473A-B995-9C7CC601CD27}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution items", "Solution items", "{4B3BA556-CD18-43C1-8FF3-DCDE1AB2B500}"
+	ProjectSection(SolutionItems) = preProject
+		.gitattributes = .gitattributes
+		.gitignore = .gitignore
+		LICENSE = LICENSE
+		README.md = README.md
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{2DB353A9-6962-4F2F-8E55-D0054BDFC2AA}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tests", "tests", "{0B63A82A-6DBB-48C8-AECC-335D8C5605E7}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MapperValidator.UnitTests", "MapperValidator.UnitTests\MapperValidator.UnitTests.csproj", "{775D71AD-41EE-46CC-BC49-CC6A0BAAC54F}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{629832D5-7406-473A-B995-9C7CC601CD27}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{629832D5-7406-473A-B995-9C7CC601CD27}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{629832D5-7406-473A-B995-9C7CC601CD27}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{629832D5-7406-473A-B995-9C7CC601CD27}.Release|Any CPU.Build.0 = Release|Any CPU
+		{775D71AD-41EE-46CC-BC49-CC6A0BAAC54F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{775D71AD-41EE-46CC-BC49-CC6A0BAAC54F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{775D71AD-41EE-46CC-BC49-CC6A0BAAC54F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{775D71AD-41EE-46CC-BC49-CC6A0BAAC54F}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{629832D5-7406-473A-B995-9C7CC601CD27} = {2DB353A9-6962-4F2F-8E55-D0054BDFC2AA}
+		{775D71AD-41EE-46CC-BC49-CC6A0BAAC54F} = {0B63A82A-6DBB-48C8-AECC-335D8C5605E7}
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {7E73F19A-D5F6-4498-9991-80990A28DBC6}
+	EndGlobalSection
+EndGlobal

@@ -1,0 +1,20 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+	<PropertyGroup>
+		<TargetFramework>netcoreapp3.1</TargetFramework>
+		<RootNamespace>MapperValidator</RootNamespace>
+		<AssemblyName>MapperValidator</AssemblyName>
+		<ImplicitUsings>enable</ImplicitUsings>
+		<Nullable>enable</Nullable>
+		<NeutralLanguage>fr</NeutralLanguage>
+		<LangVersion>latest</LangVersion>
+		<GeneratePackageOnBuild>True</GeneratePackageOnBuild>
+		<VersionPrefix>0.98</VersionPrefix>
+		<Version>$(VersionPrefix)</Version>
+	</PropertyGroup>
+
+	<ItemGroup>
+	  <PackageReference Include="NUnit" Version="3.13.3" />
+	</ItemGroup>
+
+</Project>
