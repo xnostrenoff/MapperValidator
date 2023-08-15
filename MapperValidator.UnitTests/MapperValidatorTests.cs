@@ -39,7 +39,7 @@ public class MapperValidatorTests
         var source = new ClassSource { SourceId = 1, Array = new[] { 1, 2, 3 } };
         var dest = new ClassCompare { CompareId = 1 };
 
-        var assetComparer = new MapperValidator(config);
+        var assetComparer = new MapperTester(config);
         assetComparer.IsEqual(source, dest);
     }
 
@@ -54,7 +54,7 @@ public class MapperValidatorTests
         var source = new ClassSource { Array = new[] { 1, 2, 3 } };
         var dest = new ClassCompare { };
 
-        var assetComparer = new MapperValidator(config);
+        var assetComparer = new MapperTester(config);
         assetComparer.IsNotEqual(source, dest);
     }
 
@@ -67,7 +67,7 @@ public class MapperValidatorTests
         var source = new ClassSource();
         var dest = new ClassCompare();
 
-        var assetComparer = new MapperValidator(config);
+        var assetComparer = new MapperTester(config);
         assetComparer.IsEqual(source, dest);
     }
 }

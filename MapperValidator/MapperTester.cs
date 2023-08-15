@@ -8,11 +8,11 @@ using System.Threading.Tasks;
 
 namespace MapperValidator;
 
-public class MapperValidator
+public class MapperTester
 {
     private MapperValidatorConfiguration _configuration;
 
-    public MapperValidator(MapperValidatorConfiguration configuration)
+    public MapperTester(MapperValidatorConfiguration configuration)
     {
         _configuration = configuration;
     }
