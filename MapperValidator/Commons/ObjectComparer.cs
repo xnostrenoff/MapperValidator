@@ -25,11 +25,39 @@ internal class ObjectComparer
         if (IsEqualNull(objA, objB))
             return true;
 
+        if (IsEnum(objA) && IsEnum(objB))
+            if (objA!.GetType() == objB!.GetType())
+                return (int)objA == (int)objB;
+
+        if (IsEnum(objA))
+        {
+            if (typeof(int).IsAssignableFrom(objB?.GetType()))
+                return (int)objA! == (int)objB!;
+            else 
+                return false;
+        }
+
+        if (IsEnum(objB))
+        {
+            if (typeof(int).IsAssignableFrom(objA?.GetType()))
+                return (int)objB! == (int)objA!;
+            else
+                return false;
+        }
+
         if (typeof(IComparable).IsAssignableFrom(objA?.GetType()))
-            return ((IComparable)objA!).CompareTo(objB) == 0;
+            try 
+            { 
+                return ((IComparable)objA!).CompareTo(objB) == 0; 
+            } 
+            catch { }
 
         if (typeof(IComparable).IsAssignableFrom(objB?.GetType()))
-            return ((IComparable)objB!).CompareTo(objA) == 0;
+            try
+            {
+                return ((IComparable)objB!).CompareTo(objA) == 0;
+            }
+            catch { }
 
         if (IsPrimitive(objA) && IsPrimitive(objB))
             return IsEqualPrimitive(objA, objB);
@@ -59,6 +87,11 @@ internal class ObjectComparer
     public bool IsClass(object obj)
     {
         return obj.GetType().IsClass;
+    }
+
+    public bool IsEnum(object? obj)
+    {
+        return obj?.GetType().IsEnum ?? false;
     }
 
     public bool IsPrimitive(object? obj)
