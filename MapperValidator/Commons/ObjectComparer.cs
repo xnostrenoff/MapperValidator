@@ -19,6 +19,8 @@ internal class ObjectComparer
 
     public bool IsEqual(object? objA, object? objB)
     {
+        bool testEqualityResult = false;
+
         if (IsOneElementNull(objA, objB))
             return false;
 
@@ -29,21 +31,11 @@ internal class ObjectComparer
             if (objA!.GetType() == objB!.GetType())
                 return (int)objA == (int)objB;
 
-        if (IsEnum(objA))
-        {
-            if (typeof(int).IsAssignableFrom(objB?.GetType()))
-                return (int)objA! == (int)objB!;
-            else 
-                return false;
-        }
+        if (TryTestAsEnumAndInt (objA, objB, out testEqualityResult))
+            return testEqualityResult;
 
-        if (IsEnum(objB))
-        {
-            if (typeof(int).IsAssignableFrom(objA?.GetType()))
-                return (int)objB! == (int)objA!;
-            else
-                return false;
-        }
+        if (TryTestAsEnumAndInt(objB, objA, out testEqualityResult))
+            return testEqualityResult;
 
         if (typeof(IComparable).IsAssignableFrom(objA?.GetType()))
             try 
@@ -228,6 +220,20 @@ internal class ObjectComparer
         }
 
         return true;
+    }
+
+    public bool TryTestAsEnumAndInt(object? objA, object? objB, out bool result)
+    {
+        if (IsEnum(objA))
+        {
+            if (typeof(int).IsAssignableFrom(objB?.GetType()))
+            {
+                result = (int)objA! == (int)objB!;
+                return true;
+            }
+        }
+        result = false;
+        return false;
     }
 }
 
