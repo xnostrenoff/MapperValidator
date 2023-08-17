@@ -8,37 +8,37 @@ using System.Text;
 
 namespace MapperValidator;
 
-public class MapperValidatorComparer<TSource, TCompare> : IEqualityComparer
+public class MapperValidatorComparer<TSource, TDest> : IEqualityComparer
 {
     #region Variables
 
     private MapperTester _parent;
-    private MapperValidatorComparerConfiguration<TSource, TCompare> _configuration;
+    private MapperValidatorComparerConfiguration<TSource, TDest> _configuration;
 
     #endregion Variables
 
-    public MapperValidatorComparer(MapperValidatorComparerConfiguration<TSource, TCompare> configuration, MapperTester parent)
+    public MapperValidatorComparer(MapperValidatorComparerConfiguration<TSource, TDest> configuration, MapperTester parent)
     {
         _parent = parent;
         _configuration = configuration;
     }
 
-    bool IEqualityComparer.Compare(object objSource, object objCompare)
+    bool IEqualityComparer.Compare(object objSource, object objDest)
     {
-        var destProperties = typeof(TCompare).GetProperties(BindingFlags.Instance | BindingFlags.Public);
+        var destProperties = typeof(TDest).GetProperties(BindingFlags.Instance | BindingFlags.Public);
 
         foreach (var destProperty in destProperties)
         {
             if (_configuration.IsPropertyIgnored (destProperty.Name))
                 continue;
 
-            var associatedPropertyName = _configuration.GetAssociateSourcedProperty(destProperty.Name);
-            if (associatedPropertyName != null)
+            var associatedSourcePropertyName = _configuration.GetAssociateSourceProperty(destProperty.Name);
+            if (associatedSourcePropertyName != null)
             {
-                var associatedProperty = typeof(TSource).GetProperty(associatedPropertyName, BindingFlags.Instance | BindingFlags.Public);
-                if (associatedProperty == null)
-                    throw new AnalyzeException($"Missing {typeof(TSource).Name}.{associatedPropertyName} source property for {typeof(TCompare).Name}.{destProperty.Name}.");
-                CompareProperties(objSource, associatedProperty, objCompare, destProperty);
+                var associatedSourceProperty = typeof(TSource).GetProperty(associatedSourcePropertyName, BindingFlags.Instance | BindingFlags.Public);
+                if (associatedSourceProperty == null)
+                    throw new AnalyzeException($"Missing {typeof(TSource).Name}.{associatedSourcePropertyName} source property for {typeof(TDest).Name}.{destProperty.Name}.");
+                CompareProperties(objSource, associatedSourceProperty, objDest, destProperty);
                 continue;
             }
 
@@ -47,7 +47,7 @@ public class MapperValidatorComparer<TSource, TCompare> : IEqualityComparer
                 var sourceProperty = typeof(TSource).GetProperty(destProperty.Name, BindingFlags.Instance | BindingFlags.Public);
                 if (sourceProperty == null)
                     continue;
-                CompareProperties(objSource, sourceProperty, objCompare, destProperty);
+                CompareProperties(objSource, sourceProperty, objDest, destProperty);
             }
 
         }
@@ -55,15 +55,15 @@ public class MapperValidatorComparer<TSource, TCompare> : IEqualityComparer
         return true;
     }
 
-    private void CompareProperties(object sourceObject, PropertyInfo sourceProperty, object destinationObject, PropertyInfo destinationProperty)
+    private void CompareProperties(object sourceObject, PropertyInfo sourceProperty, object destObject, PropertyInfo destProperty)
     {
         var sourceValue = sourceProperty.GetValue(sourceObject);
-        var destinationValue = destinationProperty.GetValue(destinationObject);
+        var destinationValue = destProperty.GetValue(destObject);
 
         var objComparer = new ObjectComparer(_parent);
         if (!objComparer.IsEqual(sourceValue, destinationValue))
         {
-            string message = $"{typeof(TCompare).Name}.{destinationProperty.Name} '{sourceValue?.ToString() ?? "<null>"}' attended but was '{destinationValue?.ToString() ?? "<null>"}'";
+            string message = $"{typeof(TDest).Name}.{destProperty.Name} '{sourceValue?.ToString() ?? "<null>"}' attended but was '{destinationValue?.ToString() ?? "<null>"}'";
             throw new AnalyzeException(message);
         }
     }

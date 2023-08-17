@@ -11,7 +11,7 @@ using System.Threading.Tasks;
 
 namespace MapperValidator;
 
-public class MapperValidatorComparerConfiguration<TSource, TCompare> : IEqualityComparerConfiguration
+public class MapperValidatorComparerConfiguration<TSource, TDest> : IEqualityComparerConfiguration
 {
     #region Variables
 
@@ -28,9 +28,9 @@ public class MapperValidatorComparerConfiguration<TSource, TCompare> : IEquality
 
     #region Methods
 
-    public virtual MapperValidatorComparerConfiguration<TSource, TCompare> Associate<TSourceProperty, TCompareProperty>(
+    public virtual MapperValidatorComparerConfiguration<TSource, TDest> Associate<TSourceProperty, TDestProperty>(
         Expression<Func<TSource, TSourceProperty>> sourceProperty,
-        Expression<Func<TCompare, TCompareProperty>> compareProperty)
+        Expression<Func<TDest, TDestProperty>> compareProperty)
     {
         var sourcePropertyName = PropertyName.For(sourceProperty);
         var destinationPropertyName = PropertyName.For(compareProperty);
@@ -40,14 +40,14 @@ public class MapperValidatorComparerConfiguration<TSource, TCompare> : IEquality
     }
 
 
-    internal string? GetAssociateSourcedProperty(string destPropertyName)
+    internal string? GetAssociateSourceProperty(string destPropertyName)
     {
         if (_associatedProperties.TryGetValue(destPropertyName, out var associatedPropertyName))
             return associatedPropertyName;
         return null;
     }
 
-    public MapperValidatorComparerConfiguration<TSource, TCompare> Ignore<TCompareProperty>(Expression<Func<TCompare, TCompareProperty>> compareProperty)
+    public MapperValidatorComparerConfiguration<TSource, TDest> Ignore<TDestProperty>(Expression<Func<TDest, TDestProperty>> compareProperty)
     {
         var ignoredPropertyName = PropertyName.For(compareProperty);
         _ignoredProperties.Add(ignoredPropertyName);
@@ -55,13 +55,13 @@ public class MapperValidatorComparerConfiguration<TSource, TCompare> : IEquality
         return this;
     }
 
-    public MapperValidatorComparerConfiguration<TSource, TCompare> IgnoreNotAssociatedProperties()
+    public MapperValidatorComparerConfiguration<TSource, TDest> IgnoreNotAssociatedProperties()
     {
         IgnoreNotConfiguredProperties = true;
         return this;
     }
 
-    public MapperValidatorComparerConfiguration<TSource, TCompare> IncludeNotAssociatedProperties()
+    public MapperValidatorComparerConfiguration<TSource, TDest> IncludeNotAssociatedProperties()
     {
         IgnoreNotConfiguredProperties = false;
         return this;
@@ -78,7 +78,7 @@ public class MapperValidatorComparerConfiguration<TSource, TCompare> : IEquality
 
     IEqualityComparer IEqualityComparerConfiguration.Build(MapperValidator.MapperTester tester)
     {
-        return new MapperValidatorComparer<TSource, TCompare>(this, tester);
+        return new MapperValidatorComparer<TSource, TDest>(this, tester);
     }
 
     #endregion IEqualityAssertComparer members

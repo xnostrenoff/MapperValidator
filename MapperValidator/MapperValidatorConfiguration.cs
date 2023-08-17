@@ -26,11 +26,11 @@ public class MapperValidatorConfiguration
         return this;
     }
 
-    public MapperValidatorComparerConfiguration<TSource, TMapped> AddComparer<TSource, TMapped>()
+    public MapperValidatorComparerConfiguration<TSource, TDest> AddComparer<TSource, TDest>()
     {
-        var comparer = new MapperValidatorComparerConfiguration<TSource, TMapped>();
+        var comparer = new MapperValidatorComparerConfiguration<TSource, TDest>();
 
-        var key = new Tuple<Type, Type>(typeof(TSource), typeof(TMapped));
+        var key = new Tuple<Type, Type>(typeof(TSource), typeof(TDest));
         _comparers.Add(key, comparer);
 
         return comparer;
