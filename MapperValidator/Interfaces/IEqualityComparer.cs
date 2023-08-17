@@ -9,4 +9,5 @@ namespace MapperValidator.Interfaces;
 internal interface IEqualityComparer
 {
     bool Compare(object objA, object objB);
+
 }

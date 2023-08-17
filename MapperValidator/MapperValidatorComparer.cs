@@ -3,11 +3,8 @@ using MapperValidator.Exceptions;
 using MapperValidator.Interfaces;
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Linq.Expressions;
 using System.Reflection;
 using System.Text;
-using System.Threading.Tasks;
 
 namespace MapperValidator;
 
@@ -15,48 +12,16 @@ public class MapperValidatorComparer<TSource, TCompare> : IEqualityComparer
 {
     #region Variables
 
-    private bool _ignoreNotConfiguredProperties = false;
-    private Dictionary<string, string> _associatedProperties = new Dictionary<string, string>();
-    private List<string> _ignoredProperties = new();
+    private MapperTester _parent;
+    private MapperValidatorComparerConfiguration<TSource, TCompare> _configuration;
 
     #endregion Variables
 
-    #region Methods
-
-    public virtual MapperValidatorComparer<TSource, TCompare> Associate<TSourceProperty, TCompareProperty>(
-        Expression<Func<TSource, TSourceProperty>> sourceProperty,
-        Expression<Func<TCompare, TCompareProperty>> compareProperty)
+    public MapperValidatorComparer(MapperValidatorComparerConfiguration<TSource, TCompare> configuration, MapperTester parent)
     {
-        var sourcePropertyName = PropertyName.For(sourceProperty);
-        var destinationPropertyName = PropertyName.For(compareProperty);
-
-        _associatedProperties.Add(destinationPropertyName, sourcePropertyName);
-        return this;
+        _parent = parent;
+        _configuration = configuration;
     }
-
-    public MapperValidatorComparer<TSource, TCompare> Ignore<TCompareProperty>(Expression<Func<TCompare, TCompareProperty>> compareProperty)
-    {
-        var ignoredPropertyName = PropertyName.For(compareProperty);
-        _ignoredProperties.Add(ignoredPropertyName);
-
-        return this;
-    }
-
-    public MapperValidatorComparer<TSource, TCompare> IgnoreNotAssociatedProperties()
-    {
-        _ignoreNotConfiguredProperties = true;
-        return this;
-    }
-
-    public MapperValidatorComparer<TSource, TCompare> IncludeNotAssociatedProperties()
-    {
-        _ignoreNotConfiguredProperties = false;
-        return this;
-    }
-
-    #endregion Methods
-
-    #region IEqualityAssertComparer members
 
     bool IEqualityComparer.Compare(object objSource, object objCompare)
     {
@@ -64,10 +29,10 @@ public class MapperValidatorComparer<TSource, TCompare> : IEqualityComparer
 
         foreach (var destProperty in destProperties)
         {
-            if (_ignoredProperties.Contains(destProperty.Name))
+            if (_configuration.IsPropertyIgnored (destProperty.Name))
                 continue;
 
-            _associatedProperties.TryGetValue(destProperty.Name, out var associatedPropertyName);
+            var associatedPropertyName = _configuration.GetAssociateSourcedProperty(destProperty.Name);
             if (associatedPropertyName != null)
             {
                 var associatedProperty = typeof(TSource).GetProperty(associatedPropertyName, BindingFlags.Instance | BindingFlags.Public);
@@ -77,7 +42,7 @@ public class MapperValidatorComparer<TSource, TCompare> : IEqualityComparer
                 continue;
             }
 
-            if (!_ignoreNotConfiguredProperties)
+            if (!_configuration.IgnoreNotConfiguredProperties)
             {
                 var sourceProperty = typeof(TSource).GetProperty(destProperty.Name, BindingFlags.Instance | BindingFlags.Public);
                 if (sourceProperty == null)
@@ -95,12 +60,11 @@ public class MapperValidatorComparer<TSource, TCompare> : IEqualityComparer
         var sourceValue = sourceProperty.GetValue(sourceObject);
         var destinationValue = destinationProperty.GetValue(destinationObject);
 
-        if (!ObjectComparer.IsEqual(sourceValue, destinationValue))
+        var objComparer = new ObjectComparer(_parent);
+        if (!objComparer.IsEqual(sourceValue, destinationValue))
         {
-            string message = $"{nameof(TCompare)}.{destinationProperty.Name} '{sourceValue?.ToString() ?? "<null>"}' attended but was '{destinationValue?.ToString() ?? "<null>"}'";
+            string message = $"{typeof(TCompare).Name}.{destinationProperty.Name} '{sourceValue?.ToString() ?? "<null>"}' attended but was '{destinationValue?.ToString() ?? "<null>"}'";
             throw new AnalyzeException(message);
         }
     }
-
-    #endregion IEqualityAssertComparer members
 }

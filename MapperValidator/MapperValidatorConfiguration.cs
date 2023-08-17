@@ -11,7 +11,7 @@ namespace MapperValidator;
 
 public class MapperValidatorConfiguration
 {
-    private Dictionary<Tuple<Type, Type>, IEqualityComparer> _comparers = new();
+    private Dictionary<Tuple<Type, Type>, IEqualityComparerConfiguration> _comparers = new();
     private bool _authorizeUnmanagedTypes = false;
 
     public MapperValidatorConfiguration EnableUnmanagerTypeComparaison()
@@ -26,9 +26,9 @@ public class MapperValidatorConfiguration
         return this;
     }
 
-    public MapperValidatorComparer<TSource, TMapped> AddComparer<TSource, TMapped>()
+    public MapperValidatorComparerConfiguration<TSource, TMapped> AddComparer<TSource, TMapped>()
     {
-        var comparer = new MapperValidatorComparer<TSource, TMapped>();
+        var comparer = new MapperValidatorComparerConfiguration<TSource, TMapped>();
 
         var key = new Tuple<Type, Type>(typeof(TSource), typeof(TMapped));
         _comparers.Add(key, comparer);
@@ -36,22 +36,25 @@ public class MapperValidatorConfiguration
         return comparer;
     }
 
-    internal IEqualityComparer GetComparer(Type typeSource, Type typeCompare)
+    internal IEqualityComparer GetComparer(Type typeSource, Type typeCompare, MapperTester tester)
     {
         var key = new Tuple<Type, Type>(typeSource, typeCompare);
         if (_comparers.TryGetValue(key, out var comparer))
-            return comparer;
+            return comparer.Build (tester);
+
         if (_authorizeUnmanagedTypes)
-            return CreateDefaultComparer(typeSource, typeCompare);
+            return CreateDefaultComparer(typeSource, typeCompare)
+                .Build (tester);
+        
         Assert.Fail($"<{typeSource.Name},{typeCompare}> not configured.{Environment.NewLine}Add {nameof(EnableUnmanagerTypeComparaison)} on your configaration or configure it.");
         throw new AnalyzeException();
     }
 
-    private static IEqualityComparer CreateDefaultComparer(Type sourceType, Type destinationType)
+    private static IEqualityComparerConfiguration CreateDefaultComparer(Type sourceType, Type destinationType)
     {
-        var comparerType = typeof(MapperValidatorComparer<,>);
+        var comparerType = typeof(MapperValidatorComparerConfiguration<,>);
         comparerType = comparerType.MakeGenericType(sourceType, destinationType);
-        return Activator.CreateInstance(comparerType) as IEqualityComparer
+        return Activator.CreateInstance(comparerType) as IEqualityComparerConfiguration
             ?? throw new InvalidOperationException("");
     }
 }

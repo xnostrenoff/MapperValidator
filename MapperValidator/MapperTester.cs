@@ -17,14 +17,14 @@ public class MapperTester
         _configuration = configuration;
     }
 
-    public void IsEqual(object objA, object objB)
+    public bool IsEqual(object objA, object objB)
     {
         var typeA = objA.GetType();
         var typeB = objB.GetType();
 
         try
         {
-            var comparer = _configuration.GetComparer(typeA, typeB);
+            var comparer = _configuration.GetComparer(typeA, typeB, this);
             if (comparer == null)
                 throw new Exception();
 
@@ -33,17 +33,20 @@ public class MapperTester
         catch (AnalyzeException ex)
         {
             Assert.Fail(ex.Message);
+            return false;
         }
+
+        return true;
     }
 
-    public void IsNotEqual(object objA, object objB)
+    public bool IsNotEqual(object objA, object objB)
     {
         var typeA = objA.GetType();
         var typeB = objB.GetType();
 
         try
         {
-            var comparer = _configuration.GetComparer(typeA, typeB);
+            var comparer = _configuration.GetComparer(typeA, typeB, this);
             if (comparer == null)
                 throw new Exception();
 
@@ -52,6 +55,9 @@ public class MapperTester
         catch (AnalyzeException ex)
         {
             Assert.Pass(ex.Message);
+            return true;
         }
+
+        return false;
     }
 }
